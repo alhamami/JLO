@@ -22,12 +22,12 @@ from flask_cors import CORS
 #----------------------------------------------------------------------------#
 def create_app(test_config=None):
   app = Flask(__name__)
+  db = SQLAlchemy(app)
   db.app = app
   db.init_app(app)
   CORS(app)
   moment = Moment(app)
   app.config.from_object('config')
-  db = SQLAlchemy(app)
   migrate = Migrate(app, db)
   app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 
