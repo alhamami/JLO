@@ -22,6 +22,8 @@ from flask_cors import CORS
 #----------------------------------------------------------------------------#
 def create_app(test_config=None):
   app = Flask(__name__)
+  db.app = app
+  db.init_app(app)
   CORS(app)
   moment = Moment(app)
   app.config.from_object('config')
@@ -30,7 +32,8 @@ def create_app(test_config=None):
   app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 
 
-
+  db.drop_all()
+  db.create_all()
 #----------------------------------------------------------------------------#
 # Models.
 #----------------------------------------------------------------------------#
