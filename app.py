@@ -13,22 +13,67 @@ from logging import Formatter, FileHandler
 from flask_wtf import FlaskForm
 from sqlalchemy.sql.functions import percentile_cont
 from forms import *
+from flask_migrate import Migrate
 import config
 from sqlalchemy import func,asc
-from models import setup_db, db_drop_and_create_all, get_DB, Venue, Artist, Show
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
 
 app = Flask(__name__)
-setup_db(app)
 moment = Moment(app)
 app.config.from_object('config')
-db = get_DB()
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
+db.app = app
+db.init_app(app)
 
 
-db_drop_and_create_all()
+#----------------------------------------------------------------------------#
+# Models.
+#----------------------------------------------------------------------------#
 
+class Venue(db.Model):
+    __tablename__ = 'Venue'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    city = db.Column(db.String(120), nullable=False)
+    state = db.Column(db.String(120), nullable=False)
+    address = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(120))
+    image_link = db.Column(db.String(150))
+    facebook_link = db.Column(db.String(150))
+    genres = db.Column("genres", db.ARRAY(db.String()), nullable=False)
+    website_link = db.Column(db.String(150))
+    seeking_talent = db.Column(db.Boolean, default=True)
+    seeking_description = db.Column(db.String(150))
+    Show = db.relationship('Show', backref='venue', lazy=True)
+
+
+class Artist(db.Model):
+    __tablename__ = 'Artist'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    city = db.Column(db.String(120), nullable=False)
+    state = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(120))
+    genres = db.Column("genres", db.ARRAY(db.String()), nullable=False)
+    image_link = db.Column(db.String(150))
+    facebook_link = db.Column(db.String(150))
+    website_link = db.Column(db.String(150))
+    seeking_venue = db.Column(db.Boolean, default=True)
+    seeking_description = db.Column(db.String(150))
+    Show = db.relationship('Show', backref='artist', lazy=True)
+
+class Show(db.Model):
+    __tablename__ = 'Show'
+
+    id = db.Column(db.Integer, primary_key=True)
+    artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
+    venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -454,6 +499,8 @@ if not app.debug:
 
 # Default port:
 if __name__ == '__main__':
+    db.drop_all()
+    db.create_all()
     app.run()
 
 # Or specify port manually:
