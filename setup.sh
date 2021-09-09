@@ -1,3 +1,3 @@
-export DATABASE_URL="postgres://mqtovrezzppmta:675f73bc68488f9ea8eafde79c3d467c4eea7e60aabe3d998476448a483480bc@ec2-44-195-201-3.compute-1.amazonaws.com:5432/dfe7co8k723b45"
+export DATABASE_URL="postgres://fmzbxccjemottn:87bde68550a3d51f5a7a215ecd607c44e8792a8e5ec842d7011a59a2a5408653@ec2-52-0-93-3.compute-1.amazonaws.com:5432/d3sc7ooguj4bjf"
 export FLASK_APP=app.py
 export FLASK_ENV=development
